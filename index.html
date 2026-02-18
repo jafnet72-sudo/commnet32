@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penawaran Spesial - JAF NETWORK</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Tombol Trigger */
+        .btn-trigger {
+            background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(211, 47, 47, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-trigger:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(211, 47, 47, 0.4);
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* Modal Content */
+        .modal {
+            background: white;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            overflow: hidden;
+            position: relative;
+            transform: scale(0.8) translateY(50px);
+            transition: all 0.3s ease;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1) translateY(0);
+        }
+
+        /* Header Modal */
+        .modal-header {
+            background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .modal-header h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .modal-header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Body Modal */
+        .modal-body {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #d32f2f;
+        }
+
+        /* Layanan Checkbox */
+        .layanan-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .layanan-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .layanan-item:hover {
+            background: #ffebee;
+        }
+
+        .layanan-item input {
+            margin-right: 8px;
+            width: auto;
+        }
+
+        /* Button Submit */
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .btn-submit:hover {
+            transform: scale(1.02);
+        }
+
+        /* Close Button */
+        .btn-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-close:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Success Message */
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .success-icon {
+            font-size: 60px;
+            color: #4caf50;
+            margin-bottom: 20px;
+        }
+
+        /* Animasi */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: slideIn 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Tombol untuk membuka modal -->
+    <button class="btn-trigger" onclick="openModal()">
+        📡 Dapatkan Penawaran
+    </button>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+        <div class="modal">
+            <button class="btn-close" onclick="closeModal()">&times;</button>
+            
+            <!-- Header -->
+            <div class="modal-header">
+                <h2>🚀 Penawaran Spesial!</h2>
+                <p>Dapatkan solusi IT & Networking terbaik untuk bisnis Anda</p>
+            </div>
+
+            <!-- Form -->
+            <div class="modal-body" id="formContent">
+                <form id="penawaranForm" onsubmit="handleSubmit(event)">
+                    
+                    <div class="form-group">
+                        <label for="nama">Nama Lengkap *</label>
+                        <input type="text" id="nama" name="nama" required placeholder="Masukkan nama Anda">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="whatsapp">Nomor WhatsApp *</label>
+                        <input type="tel" id="whatsapp" name="whatsapp" required placeholder="Contoh: 08123456789">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="email@perusahaan.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="perusahaan">Nama Perusahaan/Instansi</label>
+                        <input type="text" id="perusahaan" name="perusahaan" placeholder="Nama perusahaan Anda">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Layanan yang Diminati:</label>
+                        <div class="layanan-options">
+                            <label class="layanan-item">
+                                <input type="checkbox" name="layanan" value="Internet Broadband">
+                                <span>Internet Broadband</span>
+                            </label>
+                            <label class="layanan-item">
+                                <input type="checkbox" name="layanan" value="Dedicated Internet">
+                                <span>Dedicated Internet</span>
+                            </label>
+                            <label class="layanan-item">
+                                <input type="checkbox" name="layanan" value="CCTV">
+                                <span>CCTV Security</span>
+                            </label>
+                            <label class="layanan-item">
+                                <input type="checkbox" name="layanan" value="IT Maintenance">
+                                <span>IT Maintenance</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        Kirim Permintaan →
+                    </button>
+                </form>
+            </div>
+
+            <!-- Success Message -->
+            <div class="success-message" id="successMessage">
+                <div class="success-icon">✅</div>
+                <h3>Terima Kasih!</h3>
+                <p>Tim kami akan menghubungi Anda dalam 1x24 jam.</p>
+                <button class="btn-submit" onclick="closeModal()" style="margin-top: 20px;">
+                    Tutup
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Buka Modal
+        function openModal() {
+            document.getElementById('modalOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Tutup Modal
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            // Reset form setelah ditutup
+            setTimeout(() => {
+                document.getElementById('penawaranForm').reset();
+                document.getElementById('formContent').style.display = 'block';
+                document.getElementById('successMessage').classList.remove('show');
+            }, 300);
+        }
+
+        // Tutup jika klik di luar modal
+        function closeModalOutside(event) {
+            if (event.target === document.getElementById('modalOverlay')) {
+                closeModal();
+            }
+        }
+
+        // Handle Form Submit
+        function handleSubmit(event) {
+            event.preventDefault();
+            
+            // Ambil data form
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData);
+            
+            // Ambil checkbox yang dicentang
+            const layanan = [];
+            document.querySelectorAll('input[name="layanan"]:checked').forEach((cb) => {
+                layanan.push(cb.value);
+            });
+            data.layanan = layanan;
+
+            // Di sini Anda bisa kirim data ke server/email
+            console.log('Data yang dikirim:', data);
+            
+            // Tampilkan pesan sukses
+            document.getElementById('formContent').style.display = 'none';
+            document.getElementById('successMessage').classList.add('show');
+            document.getElementById('successMessage').classList.add('animate-in');
+        }
+
+        // Buka otomatis setelah 5 detik (optional)
+        // setTimeout(openModal, 5000);
+
+        // Tutup dengan tombol ESC
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+
+</body>
+</html>
